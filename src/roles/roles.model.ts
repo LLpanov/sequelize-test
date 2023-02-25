@@ -1,30 +1,28 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { BelongsToMany, Column, DataType, Model, Table } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 
-interface UserCreationAttribute {
-	email: string;
-	password: string;
+import { UserRoles } from './user-roles.model';
+import { User } from '../users/users.model';
+
+interface RoleCreationAttribute {
+	value: string;
+	description: string;
 }
 
-@Table({ tableName: 'users' })
-export class User extends Model<User, UserCreationAttribute> {
+@Table({ tableName: 'roles' })
+export class Role extends Model<Role, RoleCreationAttribute> {
 	@ApiProperty({ example: '1', description: 'unique identification' })
 	@Column({ type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true })
 	id: number;
 
-	@ApiProperty({ example: 'lol@gmail.com', description: 'post address user' })
+	@ApiProperty({ example: 'ADMIN', description: 'users role' })
 	@Column({ type: DataType.STRING, unique: true, allowNull: false })
-	email: string;
+	value: string;
 
-	@ApiProperty({ example: '123Qad345', description: 'password user' })
+	@ApiProperty({ example: 'Administrator', description: 'specification role' })
 	@Column({ type: DataType.STRING, allowNull: false })
-	password: string;
+	description: string;
 
-	@ApiProperty({ example: 'true', description: ' banned or not' })
-	@Column({ type: DataType.BOOLEAN, defaultValue: false })
-	banned: boolean;
-
-	@ApiProperty({ example: 'for an insult, affront, abuse, not polite', description: 'reason for banning' })
-	@Column({ type: DataType.STRING, allowNull: true })
-	banReason: string;
+	@BelongsToMany(() => User, () => UserRoles)
+	users: User[];
 }
